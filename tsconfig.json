@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "lib": ["es2020", "DOM"],
+    "target": "es2019",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  }
+}
