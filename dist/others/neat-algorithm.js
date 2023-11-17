@@ -1,8 +1,19 @@
 "use strict";
+class InnovationCounter {
+    constructor(count) {
+        this.count = count;
+        this.count = 0;
+    }
+    next() {
+        this.count++;
+        return this.count;
+    }
+}
 class Genome {
-    constructor(connectionGenes, nodeGenes) {
+    constructor(connectionGenes, nodeGenes, innovationCounter) {
         this.connectionGenes = connectionGenes;
         this.nodeGenes = nodeGenes;
+        this.innovationCounter = innovationCounter;
     }
     mutate() {
         const mutationType = Math.random();
@@ -10,10 +21,10 @@ class Genome {
             this.mutateWeights();
         }
         else if (mutationType < 0.9) {
-            this.addConnection();
+            this.addConnection(this.innovationCounter);
         }
         else {
-            this.addNode();
+            this.addNode(this.innovationCounter);
         }
     }
     mutateWeights() {
@@ -28,7 +39,7 @@ class Genome {
             }
         }
     }
-    addConnection() {
+    addConnection(innovationCounter) {
         const availableNodes = this.nodeGenes.filter((node) => node.type !== 'output');
         const inputNode = availableNodes[Math.floor(Math.random() * availableNodes.length)];
         const outputNodes = this.nodeGenes.filter((node) => node.type !== 'input' && node.id !== inputNode.id);
@@ -40,12 +51,12 @@ class Genome {
                 outNode: outputNode.id,
                 weight: Math.random() * 2 - 1,
                 enabled: true,
-                innovation: 0, // Atualize este valor com o número de inovação correto
+                innovation: innovationCounter.next(),
             };
             this.connectionGenes.push(newConnection);
         }
     }
-    addNode() {
+    addNode(innovationCounter) {
         if (this.connectionGenes.length === 0)
             return;
         const connectionToSplit = this.connectionGenes[Math.floor(Math.random() * this.connectionGenes.length)];
@@ -61,14 +72,14 @@ class Genome {
             outNode: newNode.id,
             weight: 1,
             enabled: true,
-            innovation: 0, // Atualize este valor com o número de inovação correto
+            innovation: innovationCounter.next(),
         };
         const newConnection2 = {
             inNode: newNode.id,
             outNode: connectionToSplit.outNode,
             weight: connectionToSplit.weight,
             enabled: true,
-            innovation: 0, // Atualize este valor com o número de inovação correto
+            innovation: innovationCounter.next(), // Atualize este valor com o número de inovação correto
         };
         this.connectionGenes.push(newConnection1);
         this.connectionGenes.push(newConnection2);
@@ -125,29 +136,34 @@ class NeuralNetwork {
     }
 }
 class NEAT {
-    constructor(populationSize, mutationRate, generations) {
+    constructor(populationSize, mutationRate, generations, innovationCounter, fitnessFunction) {
         this.populationSize = populationSize;
         this.mutationRate = mutationRate;
         this.generations = generations;
+        this.innovationCounter = innovationCounter;
+        this.fitnessFunction = fitnessFunction;
     }
     run(inputNodes, outputNodes) {
         let population = this.createInitialPopulation(inputNodes, outputNodes);
         for (let generation = 0; generation < this.generations; generation++) {
-            // Avalie a população usando sua própria função de fitness
-            const fitnessValues = population.map((genome) => {
-                // Calcule o valor de fitness para cada genoma com base em seu problema específico
-                const fitness = this.calculateFitness(genome);
-                return { genome, fitness };
-            });
-            // Selecione os melhores genomas com base nos valores de fitness
+            const fitnessValues = population.map((genome) => ({ genome, fitness: this.fitnessFunction(genome) }));
             const selectedGenomes = this.selectBestGenomes(fitnessValues);
-            // Crie a próxima geração aplicando mutações aos genomas selecionados
             const nextGeneration = [];
             for (let i = 0; i < this.populationSize; i++) {
-                const parent = selectedGenomes[Math.floor(Math.random() * selectedGenomes.length)];
-                const offspring = new Genome([...parent.connectionGenes], [...parent.nodeGenes]);
-                offspring.mutate();
-                nextGeneration.push(offspring);
+                if (Math.random() < this.mutationRate) {
+                    // Mutação
+                    const parent = selectedGenomes[Math.floor(Math.random() * selectedGenomes.length)];
+                    const offspring = new Genome([...parent.connectionGenes], [...parent.nodeGenes], this.innovationCounter);
+                    offspring.mutate();
+                    nextGeneration.push(offspring);
+                }
+                else {
+                    // Crossover
+                    const parent1 = selectedGenomes[Math.floor(Math.random() * selectedGenomes.length)];
+                    const parent2 = selectedGenomes[Math.floor(Math.random() * selectedGenomes.length)];
+                    const offspring = this.crossover(parent1, parent2);
+                    nextGeneration.push(offspring);
+                }
             }
             population = nextGeneration;
         }
@@ -165,7 +181,7 @@ class NEAT {
                 nodeGenes.push({ id: inputNodes + j, type: 'output' });
             }
             const connectionGenes = [];
-            initialPopulation.push(new Genome(connectionGenes, nodeGenes));
+            initialPopulation.push(new Genome(connectionGenes, nodeGenes, this.innovationCounter));
         }
         return initialPopulation;
     }
@@ -180,7 +196,7 @@ class NEAT {
         let bestGenome = null;
         let bestFitness = -Infinity;
         for (const genome of population) {
-            const fitness = this.calculateFitness(genome);
+            const fitness = this.fitnessFunction(genome);
             if (fitness > bestFitness) {
                 bestFitness = fitness;
                 bestGenome = genome;
@@ -188,14 +204,92 @@ class NEAT {
         }
         return bestGenome;
     }
-    calculateFitness(genome) {
-        // Implemente a lógica para calcular o valor de fitness para um genoma com base em seu problema específico
-        return 0; // Substitua 0 pelo valor de fitness real
+    crossover(parent1, parent2) {
+        const offspringConnectionGenes = [];
+        const offspringNodeGenes = [];
+        // Alinhar genes de conexão com base nos números de inovação
+        let i = 0;
+        let j = 0;
+        while (i < parent1.connectionGenes.length || j < parent2.connectionGenes.length) {
+            if (i >= parent1.connectionGenes.length) {
+                offspringConnectionGenes.push(parent2.connectionGenes[j]);
+                j++;
+            }
+            else if (j >= parent2.connectionGenes.length) {
+                offspringConnectionGenes.push(parent1.connectionGenes[i]);
+                i++;
+            }
+            else if (parent1.connectionGenes[i].innovation === parent2.connectionGenes[j].innovation) {
+                // Genes correspondentes: escolha aleatoriamente um dos pais
+                offspringConnectionGenes.push(Math.random() < 0.5 ? parent1.connectionGenes[i] : parent2.connectionGenes[j]);
+                i++;
+                j++;
+            }
+            else if (parent1.connectionGenes[i].innovation < parent2.connectionGenes[j].innovation) {
+                offspringConnectionGenes.push(parent1.connectionGenes[i]);
+                i++;
+            }
+            else {
+                offspringConnectionGenes.push(parent2.connectionGenes[j]);
+                j++;
+            }
+        }
+        // Combinar genes de nós
+        const parentNodeIds1 = new Set(parent1.nodeGenes.map((node) => node.id));
+        const parentNodeIds2 = new Set(parent2.nodeGenes.map((node) => node.id));
+        for (const nodeId of new Set([...Array.from(parentNodeIds1), ...Array.from(parentNodeIds2)])) {
+            const node1 = parent1.nodeGenes.find((node) => node.id === nodeId);
+            const node2 = parent2.nodeGenes.find((node) => node.id === nodeId);
+            if (node1 && node2) {
+                offspringNodeGenes.push(Math.random() < 0.5 ? node1 : node2);
+            }
+            else if (node1) {
+                offspringNodeGenes.push(node1);
+            }
+            else {
+                offspringNodeGenes.push(node2);
+            }
+        }
+        return new Genome(offspringConnectionGenes, offspringNodeGenes, this.innovationCounter);
+    }
+    calculateGeneticDistance(genome1, genome2, c1 = 1, c2 = 1, c3 = 0.4) {
+        let disjointGenes = 0;
+        let excessGenes = 0;
+        let matchingGenes = 0;
+        let weightDifferenceSum = 0;
+        let i = 0;
+        let j = 0;
+        while (i < genome1.connectionGenes.length || j < genome2.connectionGenes.length) {
+            if (i >= genome1.connectionGenes.length) {
+                excessGenes++;
+                j++;
+            }
+            else if (j >= genome2.connectionGenes.length) {
+                excessGenes++;
+                i++;
+            }
+            else if (genome1.connectionGenes[i].innovation === genome2.connectionGenes[j].innovation) {
+                matchingGenes++;
+                weightDifferenceSum += Math.abs(genome1.connectionGenes[i].weight - genome2.connectionGenes[j].weight);
+                i++;
+                j++;
+            }
+            else if (genome1.connectionGenes[i].innovation < genome2.connectionGenes[j].innovation) {
+                disjointGenes++;
+                i++;
+            }
+            else {
+                disjointGenes++;
+                j++;
+            }
+        }
+        const N = Math.max(genome1.connectionGenes.length, genome2.connectionGenes.length);
+        const normalizedWeightDifference = matchingGenes > 0 ? weightDifferenceSum / matchingGenes : 0;
+        return (c1 * disjointGenes) / N + (c2 * excessGenes) / N + c3 * normalizedWeightDifference;
     }
 }
 // Função de fitness personalizada para avaliar a qualidade de um genoma no problema XOR
-function calculateFitness(genome) {
-    const layers = [2, 1]; // Exemplo: 2 nós de entrada e 1 nó de saída
+function fitnessFunction(genome) {
     const nn = new NeuralNetwork(genome);
     const xorExamples = [
         { input: [0, 0], output: 0 },
@@ -217,9 +311,11 @@ const inputNodes = 2;
 const outputNodes = 1;
 const mutationRate = 0.05;
 const generations = 100;
+const innovationCounter = new InnovationCounter(1);
 // Crie e execute o algoritmo NEAT
-const neat = new NEAT(populationSize, mutationRate, generations);
-neat.calculateFitness = calculateFitness; // Substitua a função de fitness padrão pela função personalizada
+const neat = new NEAT(populationSize, mutationRate, generations, innovationCounter, fitnessFunction);
+console.log("Procurando melhor rede neural...");
+console.time('neat-time');
 const bestGenome = neat.run(inputNodes, outputNodes);
 // Crie a melhor rede neural encontrada pelo algoritmo NEAT
 const bestNeuralNetwork = new NeuralNetwork(bestGenome);
@@ -235,4 +331,5 @@ for (const example of xorExamples) {
     const networkOutput = bestNeuralNetwork.feedForward(example.input)[0];
     console.log(`Input: ${example.input}, Output: ${networkOutput}, Expected: ${example.output}`);
 }
+console.timeEnd('neat-time');
 //# sourceMappingURL=neat-algorithm.js.map

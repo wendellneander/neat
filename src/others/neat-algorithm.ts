@@ -241,7 +241,7 @@ class NEAT {
       }
 
       const connectionGenes: ConnectionGene[] = [];
-      initialPopulation.push(new Genome(connectionGenes, nodeGenes));
+      initialPopulation.push(new Genome(connectionGenes, nodeGenes, this.innovationCounter));
     }
 
     return initialPopulation;

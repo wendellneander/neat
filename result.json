@@ -1,0 +1,531 @@
+{
+  "logs": [
+    {
+      "key": "InitialPopulation",
+      "data": [
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        },
+        {
+          "connectionGenes": [],
+          "nodeGenes": [
+            { "id": 0, "type": "input" },
+            { "id": 1, "type": "input" },
+            { "id": 2, "type": "output" }
+          ],
+          "innovationCounter": { "count": 55 },
+          "fitness": 4
+        }
+      ]
+    },
+    {
+      "key": "BestGenome",
+      "data": {
+        "connectionGenes": [
+          {
+            "inNode": 1,
+            "outNode": 2,
+            "weight": -0.5332017084414122,
+            "enabled": true,
+            "innovation": 54
+          }
+        ],
+        "nodeGenes": [
+          { "id": 0, "type": "input" },
+          { "id": 1, "type": "input" },
+          { "id": 2, "type": "output" }
+        ],
+        "innovationCounter": { "count": 55 },
+        "fitness": 0
+      }
+    }
+  ],
+  "errors": []
+}
