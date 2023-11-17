@@ -1,4 +1,4 @@
-import NEAT from "./neat";
+import NEAT from "./neat/neat";
 import Genome from "./neat/genome";
 import InnovationCounter from "./neat/innovation-counter";
 import NeuralNetwork from "./neat/neural-network";
@@ -20,7 +20,6 @@ function fitnessFunction(genome: Genome): number {
   for (const example of xorExamples) {
     const networkOutput = nn.feedForward(example.input)[0];
     const error = networkOutput - example.output;
-    // console.log('networkOutput', { input: example.input, networkOutput, error });
     fitness += 1 - error;
   }
 
@@ -31,7 +30,7 @@ function fitnessFunction(genome: Genome): number {
 const populationSize = 100;
 const inputNodes = 2;
 const outputNodes = 1;
-const mutationRate = 0.3;
+const mutationRate = 0.03;
 const generations = 100;
 const innovationCounter = new InnovationCounter(1);
 const logger = new Logger();
@@ -40,13 +39,10 @@ const logger = new Logger();
 console.time('Execution time');
 const neat = new NEAT(populationSize, mutationRate, generations, innovationCounter, fitnessFunction, logger);
 const bestGenome = neat.run(inputNodes, outputNodes);
-neat.logger.exportFile()
-console.log("Melhor genoma:", JSON.stringify(bestGenome));
-
+console.log('bestGenome', bestGenome);
+neat.logger.exportFile();
 // Crie a melhor rede neural encontrada pelo algoritmo NEAT
 const bestNeuralNetwork = new NeuralNetwork(bestGenome);
-console.log("Melhor rede neural:", JSON.stringify(bestNeuralNetwork));
-
 // Teste a melhor rede neural nos exemplos XOR
 const xorExamples = [
   { input: [0, 0], output: 0 },
@@ -60,3 +56,4 @@ for (const example of xorExamples) {
   console.log(`Input: ${example.input}, Output: ${JSON.stringify(networkOutput)}, Expected: ${example.output}`);
 }
 console.timeEnd('Execution time');
+process.exit();

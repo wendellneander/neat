@@ -16,24 +16,23 @@ export default class NEAT {
   run(inputNodes: number, outputNodes: number): Genome {
     let population = this.createInitialPopulation(inputNodes, outputNodes);
 
-    for (let generation = 0; generation < this.generations; generation++) {
+    for (let generation = 1; generation < this.generations; generation++) {
       console.log("Generation: " + generation)
       // Agrupe genomas em espécies com base na distância genética
       const compatibilityThreshold = 2.0; // Ajuste este valor conforme necessário
       const species = this.groupIntoSpecies(population, compatibilityThreshold);
-      console.log("groupIntoSpecies: " + generation)
 
       // Ajuste a aptidão compartilhada dos genomas
       this.adjustFitness(species);
-      console.log("adjustFitness: " + generation)
 
       // Selecione os melhores genomas de cada espécie para reprodução
       const newPopulation = this.reproduce(species, this.populationSize);
-      console.log("reproduce: " + generation)
+
       population = newPopulation;
     }
     const best = this.getBestGenome(population);
     this.logger.log('BestGenome', best)
+    this.logger.log('Population', population)
     this.logger.exportFile()
     return best;
   }
@@ -64,9 +63,12 @@ export default class NEAT {
     let bestFitness = 0;
 
     for (const genome of population) {
-      const fitness = this.fitnessFunction(genome);
-      if (fitness > bestFitness) {
-        bestFitness = fitness;
+      if (!bestFitness) {
+        bestFitness = genome.fitness
+      }
+
+      if (genome.fitness >= bestFitness) {
+        bestFitness = genome.fitness;
         bestGenome = genome;
       }
     }
@@ -185,11 +187,10 @@ export default class NEAT {
   }
 
   adjustFitness(species: Species[]): void {
-    console.log('adjustFitness(species):', species.length)
     for (const s of species) {
       for (const genome of s.members) {
-        console.log('adjustFitness(species):', genome)
-        const adjustedFitness = this.fitnessFunction(genome) / s.members.length;
+        const fitnessResult = this.fitnessFunction(genome)
+        const adjustedFitness = fitnessResult / s.members.length;
         genome.fitness = adjustedFitness;
       }
     }
@@ -199,10 +200,14 @@ export default class NEAT {
     // calcula a aptidão total ajustada de todas as espécies e determina quantos descendentes cada espécie deve produzir 
     // na próxima geração com base em sua aptidão média ajustada proporcional
     const totalAdjustedFitness = species.reduce((sum, s) => sum + s.members.reduce((sSum, g) => sSum + g.fitness, 0), 0);
-    const offspringCountPerSpecies = species.map((s) => ({
-      speciesId: s.id,
-      count: Math.floor((s.members.reduce((sSum, g) => sSum + g.fitness, 0) / totalAdjustedFitness) * newPopulationSize),
-    }));
+    const offspringCountPerSpecies = species.map((s) => {
+      // Mesmo que a especie inteira tenha fitness 0 um individuo ainda permanece, TODO: Verificar esse comportamento
+      const count = Math.floor((s.members.reduce((sSum, g) => sSum + g.fitness, 0) / totalAdjustedFitness) * newPopulationSize) || 1
+      return {
+        speciesId: s.id,
+        count,
+      }
+    });
 
     const newPopulation: Genome[] = [];
 
@@ -220,7 +225,7 @@ export default class NEAT {
           // Crossover
           const parent1 = this.select(s.members);
           const parent2 = this.select(s.members);
-          let offspring = this.crossover(parent1, parent2);
+          const offspring = this.crossover(parent1, parent2);
 
           // Aplicar mutação com probabilidade igual à taxa de mutação
           if (Math.random() < this.mutationRate) {

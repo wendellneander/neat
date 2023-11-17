@@ -16,8 +16,10 @@ export default class NeuralNetwork {
     const hiddenNodes = nodeGenes.filter((node) => node.type === 'hidden');
 
     const layers: NodeGene[][] = [inputLayer];
+    const maxAttempts = hiddenNodes.length * 2 || 3;
+    let attempts = 0;
 
-    while (hiddenNodes.length > 0) {
+    while (hiddenNodes.length > 0 && attempts < maxAttempts) {
       const currentLayer: NodeGene[] = [];
 
       for (let i = 0; i < hiddenNodes.length; i++) {
@@ -34,6 +36,7 @@ export default class NeuralNetwork {
       }
 
       layers.push(currentLayer);
+      attempts++;
     }
 
     layers.push(outputLayer);
@@ -66,6 +69,7 @@ export default class NeuralNetwork {
     }
 
     const outputLayer = this.layers[this.layers.length - 1];
+    // console.log('outputLayer', outputLayer)
     const output = outputLayer.map((node) => nodeValues[node.id]);
 
     return output;

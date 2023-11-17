@@ -30,15 +30,15 @@
     // Usage
     fetchJSONFile("result.json", function (response) {
       const data = JSON.parse(response);
-      const genome = data.logs.find(d => d.key === 'BestGenome');
-      drawNeuralNetwork(genome.data, 'neural-network-canvas');
+      const genomes = data.logs.find(d => d.key === 'BestGenome');
+      console.log(genomes)
+      drawAllGenomes([genomes.data], 'neural-network-canvas');
     });
 
-    function drawNeuralNetwork(genome, canvasId) {
+    function drawAllGenomes(genomes, canvasId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
 
-      // Função para desenhar um nó
       function drawNode(x, y, radius, id) {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -51,7 +51,6 @@
         ctx.fillText(id, x - 4, y - 20);
       }
 
-      // Função para desenhar uma conexão
       function drawConnection(x1, y1, x2, y2, color) {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -60,43 +59,52 @@
         ctx.stroke();
       }
 
-      // Calcule as posições dos nós
-      const inputNodes = genome.nodeGenes.filter(node => node.type === 'input');
-      const outputNodes = genome.nodeGenes.filter(node => node.type === 'output');
-      const hiddenNodes = genome.nodeGenes.filter(node => node.type === 'hidden');
+      function getNodePositions(genomes, nodes, xOffset) {
+        const inputNodes = nodes.filter(node => node.type === 'input');
+        const outputNodes = nodes.filter(node => node.type === 'output');
+        const hiddenNodes = nodes.filter(node => node.type === 'hidden');
 
-      const inputNodePositions = inputNodes.map((node, i) => ({
-        id: node.id,
-        x: (i + 1) * (canvas.width / (inputNodes.length + 1)),
-        y: canvas.height * 0.1
-      }));
+        const inputNodePositions = inputNodes.map((node, i) => ({
+          id: node.id,
+          x: xOffset + (i + 1) * (canvas.width / (genomes.length * (inputNodes.length + 1))),
+          y: canvas.height * 0.1
+        }));
 
-      const outputNodePositions = outputNodes.map((node, i) => ({
-        id: node.id,
-        x: (i + 1) * (canvas.width / (outputNodes.length + 1)),
-        y: canvas.height * 0.9
-      }));
+        const outputNodePositions = outputNodes.map((node, i) => ({
+          id: node.id,
+          x: xOffset + (i + 1) * (canvas.width / (genomes.length * (outputNodes.length + 1))),
+          y: canvas.height * 0.9
+        }));
 
-      const hiddenNodePositions = hiddenNodes.map((node, i) => ({
-        id: node.id,
-        x: (i + 1) * (canvas.width / (hiddenNodes.length + 1)),
-        y: canvas.height * 0.5
-      }));
+        const hiddenNodePositions = hiddenNodes.map((node, i) => ({
+          id: node.id,
+          x: xOffset + (i + 1) * (canvas.width / (genomes.length * (hiddenNodes.length + 1))),
+          y: canvas.height * 0.5
+        }));
 
-      const nodePositions = [...inputNodePositions, ...outputNodePositions, ...hiddenNodePositions];
+        return [...inputNodePositions, ...outputNodePositions, ...hiddenNodePositions];
+      }
 
-      // Desenhe as conexões
-      genome.connectionGenes.forEach(connection => {
-        const inNodePos = nodePositions.find(pos => pos.id === connection.inNode);
-        const outNodePos = nodePositions.find(pos => pos.id === connection.outNode);
-        const color = connection.enabled ? 'green' : 'red';
+      function drawGenome(genome, xOffset) {
+        const nodePositions = getNodePositions(genomes, genome.nodeGenes, xOffset);
 
-        drawConnection(inNodePos.x, inNodePos.y, outNodePos.x, outNodePos.y, color);
-      });
+        genome.connectionGenes.forEach(connection => {
+          const inNodePos = nodePositions.find(pos => pos.id === connection.inNode);
+          const outNodePos = nodePositions.find(pos => pos.id === connection.outNode);
+          const color = connection.enabled ? 'green' : 'red';
 
-      // Desenhe os nós
-      nodePositions.forEach(pos => {
-        drawNode(pos.x, pos.y, 10, pos.id);
+          if (connection.enabled)
+            drawConnection(inNodePos.x, inNodePos.y, outNodePos.x, outNodePos.y, color);
+        });
+
+        nodePositions.forEach(pos => {
+          drawNode(pos.x, pos.y, 10, pos.id);
+        });
+      }
+
+      genomes.forEach((genome, index) => {
+        const xOffset = index * canvas.width / genomes.length;
+        drawGenome(genome, xOffset);
       });
     }
   </script>

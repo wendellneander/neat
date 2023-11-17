@@ -10,7 +10,9 @@ class NeuralNetwork {
         const outputLayer = nodeGenes.filter((node) => node.type === 'output');
         const hiddenNodes = nodeGenes.filter((node) => node.type === 'hidden');
         const layers = [inputLayer];
-        while (hiddenNodes.length > 0) {
+        const maxAttempts = hiddenNodes.length * 2 || 3;
+        let attempts = 0;
+        while (hiddenNodes.length > 0 && attempts < maxAttempts) {
             const currentLayer = [];
             for (let i = 0; i < hiddenNodes.length; i++) {
                 const node = hiddenNodes[i];
@@ -22,6 +24,7 @@ class NeuralNetwork {
                 }
             }
             layers.push(currentLayer);
+            attempts++;
         }
         layers.push(outputLayer);
         return layers;
@@ -46,6 +49,7 @@ class NeuralNetwork {
             }
         }
         const outputLayer = this.layers[this.layers.length - 1];
+        // console.log('outputLayer', outputLayer)
         const output = outputLayer.map((node) => nodeValues[node.id]);
         return output;
     }
