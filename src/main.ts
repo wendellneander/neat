@@ -4,8 +4,23 @@ import InnovationCounter from "./neat/innovation-counter";
 import NeuralNetwork from "./neat/neural-network";
 import Logger from './logger'
 
+// Parâmetros do algoritmo NEAT
+const populationSize = 100;
+const inputNodes = 2;
+const outputNodes = 1;
+const mutationRate = 0.4;
+const generations = 100;
+const innovationCounter = new InnovationCounter(1);
+const logger = new Logger();
+
 // Função de fitness personalizada para avaliar a qualidade de um genoma no problema XOR
 function fitnessFunction(genome: Genome): number {
+  let squaredErrorSum = 0;
+
+  if (!genome.hasActiveConnectionsBetweenInputAndOutput()) {
+    squaredErrorSum = -100;
+  }
+
   const nn = new NeuralNetwork(genome);
 
   const xorExamples = [
@@ -15,34 +30,27 @@ function fitnessFunction(genome: Genome): number {
     { input: [1, 1], output: 0 },
   ];
 
-  let fitness = 0;
-
   for (const example of xorExamples) {
     const networkOutput = nn.feedForward(example.input)[0];
     const error = networkOutput - example.output;
-    fitness += 1 - error;
+    squaredErrorSum += error * error;
   }
 
-  return fitness;
-}
+  const meanSquaredError = squaredErrorSum / xorExamples.length;
 
-// Parâmetros do algoritmo NEAT
-const populationSize = 100;
-const inputNodes = 2;
-const outputNodes = 1;
-const mutationRate = 0.03;
-const generations = 100;
-const innovationCounter = new InnovationCounter(1);
-const logger = new Logger();
+  // Retorna o inverso do erro quadrático médio como aptidão
+  return 1 / meanSquaredError;
+}
 
 // Crie e execute o algoritmo NEAT
 console.time('Execution time');
 const neat = new NEAT(populationSize, mutationRate, generations, innovationCounter, fitnessFunction, logger);
 const bestGenome = neat.run(inputNodes, outputNodes);
-console.log('bestGenome', bestGenome);
 neat.logger.exportFile();
+
 // Crie a melhor rede neural encontrada pelo algoritmo NEAT
 const bestNeuralNetwork = new NeuralNetwork(bestGenome);
+
 // Teste a melhor rede neural nos exemplos XOR
 const xorExamples = [
   { input: [0, 0], output: 0 },
@@ -55,5 +63,7 @@ for (const example of xorExamples) {
   const networkOutput = bestNeuralNetwork.feedForward(example.input)[0];
   console.log(`Input: ${example.input}, Output: ${JSON.stringify(networkOutput)}, Expected: ${example.output}`);
 }
+console.log('Layers:', bestNeuralNetwork.layers);
+console.log('NodeValues:', bestNeuralNetwork.nodeValues);
 console.timeEnd('Execution time');
 process.exit();

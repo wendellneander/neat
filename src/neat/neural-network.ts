@@ -4,39 +4,40 @@ import { ConnectionGene, NodeGene } from "./types";
 export default class NeuralNetwork {
   layers: NodeGene[][];
   connectionGenes: ConnectionGene[];
+  nodeValues: { [id: number]: number }
 
   constructor(genome: Genome) {
     this.connectionGenes = genome.connectionGenes;
     this.layers = this.buildLayers(genome.nodeGenes);
+    this.nodeValues = {}
   }
 
   buildLayers(nodeGenes: NodeGene[]): NodeGene[][] {
-    const inputLayer = nodeGenes.filter((node) => node.type === 'input');
-    const outputLayer = nodeGenes.filter((node) => node.type === 'output');
-    const hiddenNodes = nodeGenes.filter((node) => node.type === 'hidden');
-
+    const inputLayer = nodeGenes.filter(node => node.type === 'input');
+    const outputLayer = nodeGenes.filter(node => node.type === 'output');
+    const hiddenNodes = nodeGenes.filter(node => node.type === 'hidden');
     const layers: NodeGene[][] = [inputLayer];
-    const maxAttempts = hiddenNodes.length * 2 || 3;
-    let attempts = 0;
 
-    while (hiddenNodes.length > 0 && attempts < maxAttempts) {
+    while (hiddenNodes.length > 0) {
       const currentLayer: NodeGene[] = [];
 
       for (let i = 0; i < hiddenNodes.length; i++) {
         const node = hiddenNodes[i];
         const incomingConnections = this.connectionGenes.filter(
-          (connection) => connection.outNode === node.id && connection.enabled
+          connection => connection.outNode === node.id && connection.enabled
         );
 
-        if (incomingConnections.every((connection) => layers.flat().some((layerNode) => layerNode.id === connection.inNode))) {
+        const hasConnections = incomingConnections.every(connection => layers.flat().some(layerNode => layerNode.id === connection.inNode));
+        if (hasConnections) {
           currentLayer.push(node);
-          hiddenNodes.splice(i, 1);
-          i--;
         }
+        hiddenNodes.splice(i, 1);
+        i--;
       }
 
-      layers.push(currentLayer);
-      attempts++;
+      if (currentLayer.length > 0) {
+        layers.push(currentLayer);
+      }
     }
 
     layers.push(outputLayer);
@@ -60,18 +61,57 @@ export default class NeuralNetwork {
 
         for (const connection of this.connectionGenes) {
           if (connection.outNode === node.id && connection.enabled) {
-            weightedSum += nodeValues[connection.inNode] * connection.weight;
+            weightedSum += (nodeValues[connection.inNode] || 0) * connection.weight;
           }
         }
 
         nodeValues[node.id] = this.activationFunction(weightedSum);
       }
     }
-
+    this.nodeValues = nodeValues
     const outputLayer = this.layers[this.layers.length - 1];
-    // console.log('outputLayer', outputLayer)
-    const output = outputLayer.map((node) => nodeValues[node.id]);
+    const output = outputLayer.map(node => nodeValues[node.id]);
 
     return output;
+  }
+
+  activationFunctionDerivative(x: number): number {
+    const sigmoid = this.activationFunction(x);
+    return sigmoid * (1 - sigmoid);
+  }
+
+  train(input: number[], targetOutput: number[], learningRate: number): void {
+    // Feedforward
+    const output = this.feedForward(input);
+
+    // Inicializa os gradientes dos erros para cada nó
+    const errorGradients: { [id: number]: number } = {};
+
+    // Backpropagation
+    for (let layerIndex = this.layers.length - 1; layerIndex >= 0; layerIndex--) {
+      const layer = this.layers[layerIndex];
+
+      for (const node of layer) {
+        if (node.type === 'output') {
+          // Camada de saída: calcule o erro e o gradiente do erro
+          const error = targetOutput[node.id - this.layers[this.layers.length - 2].length] - output[node.id];
+          errorGradients[node.id] = error * this.activationFunctionDerivative(node.id);
+        } else if (node.type === 'hidden') {
+          // Camadas ocultas: calcule o erro e o gradiente do erro
+          let downstreamErrorSum = 0;
+
+          for (const connection of this.connectionGenes.filter((c) => c.inNode === node.id && c.enabled)) {
+            downstreamErrorSum += errorGradients[connection.outNode] * connection.weight;
+          }
+
+          errorGradients[node.id] = downstreamErrorSum * this.activationFunctionDerivative(node.id);
+        }
+
+        // Atualize os pesos das conexões de entrada
+        for (const connection of this.connectionGenes.filter((c) => c.outNode === node.id && c.enabled)) {
+          connection.weight += learningRate * errorGradients[node.id] * this.activationFunction(connection.inNode);
+        }
+      }
+    }
   }
 }

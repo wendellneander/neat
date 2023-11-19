@@ -88,4 +88,21 @@ export default class Genome {
     this.connectionGenes.push(newConnection1);
     this.connectionGenes.push(newConnection2);
   }
+
+  hasActiveConnectionsBetweenInputAndOutput(): boolean {
+    const inputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
+    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
+
+    for (const connection of this.connectionGenes) {
+      if (
+        connection.enabled &&
+        inputNodeIds.some(input => input === connection.inNode) &&
+        outputNodeIds.some(output => output === connection.outNode)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

@@ -17,7 +17,6 @@ export default class NEAT {
     let population = this.createInitialPopulation(inputNodes, outputNodes);
 
     for (let generation = 1; generation < this.generations; generation++) {
-      console.log("Generation: " + generation)
       // Agrupe genomas em espécies com base na distância genética
       const compatibilityThreshold = 2.0; // Ajuste este valor conforme necessário
       const species = this.groupIntoSpecies(population, compatibilityThreshold);
@@ -30,6 +29,7 @@ export default class NEAT {
 
       population = newPopulation;
     }
+
     const best = this.getBestGenome(population);
     this.logger.log('BestGenome', best)
     this.logger.log('Population', population)
@@ -202,7 +202,7 @@ export default class NEAT {
     const totalAdjustedFitness = species.reduce((sum, s) => sum + s.members.reduce((sSum, g) => sSum + g.fitness, 0), 0);
     const offspringCountPerSpecies = species.map((s) => {
       // Mesmo que a especie inteira tenha fitness 0 um individuo ainda permanece, TODO: Verificar esse comportamento
-      const count = Math.floor((s.members.reduce((sSum, g) => sSum + g.fitness, 0) / totalAdjustedFitness) * newPopulationSize) || 1
+      const count = Math.floor((s.members.reduce((sSum, g) => sSum + g.fitness, 0) / totalAdjustedFitness) * newPopulationSize) || 2
       return {
         speciesId: s.id,
         count,
