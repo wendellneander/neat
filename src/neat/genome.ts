@@ -40,7 +40,7 @@ export default class Genome {
     const outputNode = outputNodes[Math.floor(Math.random() * outputNodes.length)];
 
     const existingConnection = this.connectionGenes.find(
-      (connection) => connection.inNode === inputNode.id && connection.outNode === outputNode.id
+      connection => connection.inNode === inputNode.id && connection.outNode === outputNode.id
     );
 
     if (!existingConnection) {
@@ -66,13 +66,14 @@ export default class Genome {
     const newNode: NodeGene = {
       id: newNodeId,
       type: 'hidden',
+      weight: Math.random() * 2 - 1
     };
     this.nodeGenes.push(newNode);
 
     const newConnection1: ConnectionGene = {
       inNode: connectionToSplit.inNode,
       outNode: newNode.id,
-      weight: 1,
+      weight: Math.random() * 2 - 1,
       enabled: true,
       innovation: innovationCounter.next(),
     };
@@ -82,7 +83,7 @@ export default class Genome {
       outNode: connectionToSplit.outNode,
       weight: connectionToSplit.weight,
       enabled: true,
-      innovation: innovationCounter.next(), // Atualize este valor com o número de inovação correto
+      innovation: innovationCounter.next(),
     };
 
     this.connectionGenes.push(newConnection1);
@@ -91,7 +92,7 @@ export default class Genome {
 
   hasActiveConnectionsBetweenInputAndOutput(): boolean {
     const inputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
-    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
+    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'output').map(node => node.id);
 
     for (const connection of this.connectionGenes) {
       if (
@@ -100,6 +101,21 @@ export default class Genome {
         outputNodeIds.some(output => output === connection.outNode)
       ) {
         return true;
+      }
+    }
+
+    return false;
+  }
+
+  hasIndirectActiveConnectionsBetweenInputAndOutput(): boolean {
+    const inputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
+    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'output').map(node => node.id);
+
+    for (const connection1 of this.connectionGenes.filter(c => c.enabled && inputNodeIds.some(i => i === c.inNode))) {
+      for (const connection2 of this.connectionGenes.filter(c => c.enabled && outputNodeIds.some(i => i === c.outNode))) {
+        if (connection1.outNode === connection2.inNode) {
+          return true;
+        }
       }
     }
 

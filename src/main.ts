@@ -10,15 +10,17 @@ const inputNodes = 2;
 const outputNodes = 1;
 const mutationRate = 0.4;
 const generations = 100;
-const innovationCounter = new InnovationCounter(1);
+const innovationCounter = new InnovationCounter();
 const logger = new Logger();
 
 // Função de fitness personalizada para avaliar a qualidade de um genoma no problema XOR
 function fitnessFunction(genome: Genome): number {
   let squaredErrorSum = 0;
 
-  if (!genome.hasActiveConnectionsBetweenInputAndOutput()) {
-    squaredErrorSum = -100;
+  if (!genome.hasIndirectActiveConnectionsBetweenInputAndOutput()) {
+    squaredErrorSum = -10;
+  } else {
+    squaredErrorSum += 20
   }
 
   const nn = new NeuralNetwork(genome);
@@ -39,7 +41,9 @@ function fitnessFunction(genome: Genome): number {
   const meanSquaredError = squaredErrorSum / xorExamples.length;
 
   // Retorna o inverso do erro quadrático médio como aptidão
-  return 1 / meanSquaredError;
+  const fit = 1 / meanSquaredError;
+  genome.fitness = fit
+  return fit;
 }
 
 // Crie e execute o algoritmo NEAT
@@ -63,6 +67,8 @@ for (const example of xorExamples) {
   const networkOutput = bestNeuralNetwork.feedForward(example.input)[0];
   console.log(`Input: ${example.input}, Output: ${JSON.stringify(networkOutput)}, Expected: ${example.output}`);
 }
+
+console.log('Fitness:', bestNeuralNetwork.genome.fitness);
 console.log('Layers:', bestNeuralNetwork.layers);
 console.log('NodeValues:', bestNeuralNetwork.nodeValues);
 console.timeEnd('Execution time');

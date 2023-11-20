@@ -36,10 +36,10 @@ class NEAT {
         for (let i = 0; i < this.populationSize; i++) {
             const nodeGenes = [];
             for (let j = 0; j < inputNodes; j++) {
-                nodeGenes.push({ id: j, type: 'input' });
+                nodeGenes.push({ id: j, type: 'input', weight: Math.random() * 2 - 1 });
             }
             for (let j = 0; j < outputNodes; j++) {
-                nodeGenes.push({ id: inputNodes + j, type: 'output' });
+                nodeGenes.push({ id: inputNodes + j, type: 'output', weight: Math.random() * 2 - 1 });
             }
             const connectionGenes = [];
             initialPopulation.push(new genome_1.default(connectionGenes, nodeGenes, this.innovationCounter, 0));
@@ -62,51 +62,60 @@ class NEAT {
         return bestGenome;
     }
     crossover(parent1, parent2) {
+        // Inicializa as listas de genes de conexão e nós do descendente
         const offspringConnectionGenes = [];
         const offspringNodeGenes = [];
-        // Alinhar genes de conexão com base nos números de inovação
+        // Alinha os genes de conexão dos pais com base nos números de inovação
         let i = 0;
         let j = 0;
         while (i < parent1.connectionGenes.length || j < parent2.connectionGenes.length) {
             if (i >= parent1.connectionGenes.length) {
+                // O pai 1 não tem mais genes, adicione os genes restantes do pai 2 ao descendente
                 offspringConnectionGenes.push(parent2.connectionGenes[j]);
                 j++;
             }
             else if (j >= parent2.connectionGenes.length) {
+                // O pai 2 não tem mais genes, adicione os genes restantes do pai 1 ao descendente
                 offspringConnectionGenes.push(parent1.connectionGenes[i]);
                 i++;
             }
             else if (parent1.connectionGenes[i].innovation === parent2.connectionGenes[j].innovation) {
-                // Genes correspondentes: escolha aleatoriamente um dos pais
+                // Genes correspondentes: escolha aleatoriamente um dos pais e adicione o gene ao descendente
                 offspringConnectionGenes.push(Math.random() < 0.5 ? parent1.connectionGenes[i] : parent2.connectionGenes[j]);
                 i++;
                 j++;
             }
             else if (parent1.connectionGenes[i].innovation < parent2.connectionGenes[j].innovation) {
+                // O gene do pai 1 é disjunto ou excedente, adicione-o ao descendente
                 offspringConnectionGenes.push(parent1.connectionGenes[i]);
                 i++;
             }
             else {
+                // O gene do pai 2 é disjunto ou excedente, adicione-o ao descendente
                 offspringConnectionGenes.push(parent2.connectionGenes[j]);
                 j++;
             }
         }
-        // Combinar genes de nós
+        // Combina os genes dos nós dos pais para criar os genes dos nós do descendente
         const parentNodeIds1 = new Set(parent1.nodeGenes.map((node) => node.id));
         const parentNodeIds2 = new Set(parent2.nodeGenes.map((node) => node.id));
         for (const nodeId of new Set([...Array.from(parentNodeIds1), ...Array.from(parentNodeIds2)])) {
             const node1 = parent1.nodeGenes.find((node) => node.id === nodeId);
             const node2 = parent2.nodeGenes.find((node) => node.id === nodeId);
             if (node1 && node2) {
+                // Nós correspondentes: escolha aleatoriamente um dos pais e adicione o nó ao descendente
                 offspringNodeGenes.push(Math.random() < 0.5 ? node1 : node2);
             }
             else if (node1) {
+                // O nó está presente apenas no pai 1, adicione-o ao descendente
                 offspringNodeGenes.push(node1);
             }
             else {
+                // O nó está presente apenas no pai 2, adicione-o ao descendente
                 offspringNodeGenes.push(node2);
             }
         }
+        // Retorna um novo genoma descendente com os genes de conexão e nós combinados dos pais
         return new genome_1.default(offspringConnectionGenes, offspringNodeGenes, this.innovationCounter);
     }
     calculateGeneticDistance(genome1, genome2, c1 = 1, c2 = 1, c3 = 0.4) {

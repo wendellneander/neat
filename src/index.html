@@ -37,7 +37,7 @@
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
 
-      function drawNode(x, y, radius, id) {
+      function drawNode(x, y, radius, id, type) {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
         ctx.fillStyle = 'black';
@@ -46,7 +46,7 @@
 
         ctx.font = '12px Arial';
         ctx.fillStyle = 'black';
-        ctx.fillText(id, x - 4, y - 20);
+        ctx.fillText(`${id} - ${type}`, x - 4, y - 20);
       }
 
       function drawConnection(x1, y1, x2, y2, color) {
@@ -64,18 +64,21 @@
 
         const inputNodePositions = inputNodes.map((node, i) => ({
           id: node.id,
+          type: node.type,
           x: xOffset + (i + 1) * (canvas.width / (genomes.length * (inputNodes.length + 1))),
           y: canvas.height * 0.07
         }));
 
         const outputNodePositions = outputNodes.map((node, i) => ({
           id: node.id,
+          type: node.type,
           x: xOffset + (i + 1) * (canvas.width / (genomes.length * (outputNodes.length + 1))),
           y: canvas.height * 0.95
         }));
 
         const hiddenNodePositions = hiddenNodes.map((node, i) => ({
           id: node.id,
+          type: node.type,
           x: xOffset + (i + 1) * (canvas.width / (genomes.length * (hiddenNodes.length + 1))),
           y: Math.floor(Math.random() * (canvas.height - 40 + 1)) + 40
         }));
@@ -97,7 +100,7 @@
 
         nodePositions.forEach(pos => {
           if (genome.connectionGenes.some(c => (c.inNode === pos.id || c.outNode === pos.id) && (c.enabled)))
-            drawNode(pos.x, pos.y, 10, pos.id);
+            drawNode(pos.x, pos.y, 10, pos.id, pos.type);
         });
       }
 

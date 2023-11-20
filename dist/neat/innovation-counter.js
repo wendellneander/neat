@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class InnovationCounter {
-    constructor(count) {
+    constructor(count = 0) {
         this.count = count;
-        this.count = 0;
     }
     next() {
         this.count++;

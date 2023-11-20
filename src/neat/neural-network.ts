@@ -6,10 +6,11 @@ export default class NeuralNetwork {
   connectionGenes: ConnectionGene[];
   nodeValues: { [id: number]: number }
 
-  constructor(genome: Genome) {
+  constructor(readonly genome: Genome) {
     this.connectionGenes = genome.connectionGenes;
     this.layers = this.buildLayers(genome.nodeGenes);
     this.nodeValues = {}
+    this.initializeWeightsRandomly()
   }
 
   buildLayers(nodeGenes: NodeGene[]): NodeGene[][] {
@@ -17,6 +18,7 @@ export default class NeuralNetwork {
     const outputLayer = nodeGenes.filter(node => node.type === 'output');
     const hiddenNodes = nodeGenes.filter(node => node.type === 'hidden');
     const layers: NodeGene[][] = [inputLayer];
+    let currentLayerIndex = 0;
 
     while (hiddenNodes.length > 0) {
       const currentLayer: NodeGene[] = [];
@@ -27,16 +29,19 @@ export default class NeuralNetwork {
           connection => connection.outNode === node.id && connection.enabled
         );
 
-        const hasConnections = incomingConnections.every(connection => layers.flat().some(layerNode => layerNode.id === connection.inNode));
-        if (hasConnections) {
+        const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some((layerNode) => layerNode.id === connection.inNode))
+        if (allConnectionsComeFromLayers) {
           currentLayer.push(node);
+          hiddenNodes.splice(i, 1);
+          i--;
         }
-        hiddenNodes.splice(i, 1);
-        i--;
       }
 
       if (currentLayer.length > 0) {
         layers.push(currentLayer);
+        currentLayerIndex++;
+      } else {
+        break;
       }
     }
 
@@ -44,34 +49,55 @@ export default class NeuralNetwork {
     return layers;
   }
 
+  initializeWeightsRandomly(minWeight = -1.0, maxWeight = 1.0): void {
+    for (const connection of this.connectionGenes) {
+      connection.weight = Math.random() * (maxWeight - minWeight) + minWeight;
+    }
+  }
+
   activationFunction(x: number): number {
     return 1 / (1 + Math.exp(-x));
   }
 
   feedForward(input: number[]): number[] {
+    // Inicializa um objeto para armazenar os valores dos nós
     const nodeValues: { [id: number]: number } = {};
 
+    if (input.length !== this.layers[0].length) {
+      throw new Error('Input data dont match with input layer.');
+    }
+    // Atribui os valores de entrada aos nós de entrada
     for (let i = 0; i < input.length; i++) {
       nodeValues[this.layers[0][i].id] = input[i];
     }
 
+    // Itera pelas camadas e nós da rede neural, começando pela primeira camada oculta
     for (const layer of this.layers.slice(1)) {
       for (const node of layer) {
         let weightedSum = 0;
 
+        // Calcula a soma ponderada das entradas do nó atual usando apenas conexões ativas
         for (const connection of this.connectionGenes) {
           if (connection.outNode === node.id && connection.enabled) {
-            weightedSum += (nodeValues[connection.inNode] || 0) * connection.weight;
+            weightedSum += (nodeValues[connection.inNode] ?? node.weight) * connection.weight;
+            if (isNaN(weightedSum)) {
+              console.log('\n\nInvalidNodeId:', connection.inNode)
+              console.log('Nodes:', this.genome.nodeGenes.map(node => node.id));
+              console.log('WeightedSum:', { weightedSum, localWeight: { a: nodeValues[connection.inNode], b: connection.weight }, connection, node, nodeValues })
+            }
           }
         }
 
+        // Aplica a função de ativação à soma ponderada e armazena o resultado no objeto nodeValues
         nodeValues[node.id] = this.activationFunction(weightedSum);
       }
     }
-    this.nodeValues = nodeValues
-    const outputLayer = this.layers[this.layers.length - 1];
-    const output = outputLayer.map(node => nodeValues[node.id]);
 
+    this.nodeValues = nodeValues
+
+    // Extrai os valores dos nós de saída da última camada e retorna como resultado
+    const outputLayer = this.layers[this.layers.length - 1];
+    const output = outputLayer.map((node) => nodeValues[node.id]);
     return output;
   }
 
