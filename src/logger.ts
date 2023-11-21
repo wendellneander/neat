@@ -2,16 +2,16 @@ import * as fs from 'fs'
 
 export default class Logger {
   constructor(
-    private logs: any[] = [],
-    private errors: any[] = [],
+    private logs: { [key: string]: string } = {},
+    private errors: { [key: string]: string } = {},
   ) { }
 
-  log(title: string, data: any) {
-    this.logs.push({ key: title, data })
+  log(key: string, data: any) {
+    this.logs[key] = data
   }
 
-  error(title: string, data: any) {
-    this.errors.push({ key: title, data })
+  error(key: string, data: any) {
+    this.errors[key] = data
   }
 
   exportFile() {

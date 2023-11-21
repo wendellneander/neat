@@ -32,7 +32,12 @@ export default class NEAT {
 
     const best = this.getBestGenome(population);
     this.logger.log('BestGenome', best)
-    this.logger.log('Population', population)
+    this.logger.log('Layers', best.getLayers())
+    this.logger.log('Population', population.map(p => ({ ...p, layers: p.getLayers() })))
+    this.logger.log('Connections', {
+      active: best.connectionGenes.filter(c => c.enabled).length,
+      all: best.connectionGenes.length
+    })
     this.logger.exportFile()
     return best;
   }
@@ -54,7 +59,7 @@ export default class NEAT {
       const connectionGenes: ConnectionGene[] = [];
       initialPopulation.push(new Genome(connectionGenes, nodeGenes, this.innovationCounter, 0));
     }
-    this.logger.log('InitialPopulation', initialPopulation)
+    // this.logger.log('InitialPopulation', initialPopulation)
     return initialPopulation;
   }
 
@@ -86,28 +91,35 @@ export default class NEAT {
     let j = 0;
 
     while (i < parent1.connectionGenes.length || j < parent2.connectionGenes.length) {
+      let selectedConnection: ConnectionGene | null = null;
+
       if (i >= parent1.connectionGenes.length) {
-        // O pai 1 não tem mais genes, adicione os genes restantes do pai 2 ao descendente
-        offspringConnectionGenes.push(parent2.connectionGenes[j]);
+        selectedConnection = parent2.connectionGenes[j];
         j++;
       } else if (j >= parent2.connectionGenes.length) {
-        // O pai 2 não tem mais genes, adicione os genes restantes do pai 1 ao descendente
-        offspringConnectionGenes.push(parent1.connectionGenes[i]);
+        selectedConnection = parent1.connectionGenes[i];
         i++;
       } else if (parent1.connectionGenes[i].innovation === parent2.connectionGenes[j].innovation) {
-        // Genes correspondentes: escolha aleatoriamente um dos pais e adicione o gene ao descendente
-        offspringConnectionGenes.push(Math.random() < 0.5 ? parent1.connectionGenes[i] : parent2.connectionGenes[j]);
+        selectedConnection = Math.random() < 0.5 ? parent1.connectionGenes[i] : parent2.connectionGenes[j];
         i++;
         j++;
       } else if (parent1.connectionGenes[i].innovation < parent2.connectionGenes[j].innovation) {
-        // O gene do pai 1 é disjunto ou excedente, adicione-o ao descendente
-        offspringConnectionGenes.push(parent1.connectionGenes[i]);
+        selectedConnection = parent1.connectionGenes[i];
         i++;
       } else {
-        // O gene do pai 2 é disjunto ou excedente, adicione-o ao descendente
-        offspringConnectionGenes.push(parent2.connectionGenes[j]);
+        selectedConnection = parent2.connectionGenes[j];
         j++;
       }
+
+      // Verifica se a conexão selecionada já existe no descendente
+      const connectionExists = offspringConnectionGenes.some(
+        conn => conn.inNode === selectedConnection!.inNode && conn.outNode === selectedConnection!.outNode
+      );
+
+      // Adiciona a conexão ao descendente somente se ela não existir
+      // if (!connectionExists) {
+      offspringConnectionGenes.push(selectedConnection!);
+      // }
     }
 
     // Combina os genes dos nós dos pais para criar os genes dos nós do descendente

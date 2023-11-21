@@ -3,7 +3,7 @@ import Genome from "./genome";
 export type NodeGene = {
   id: number;
   type: 'input' | 'hidden' | 'output';
-  weight?: number;
+  weight: number;
 }
 
 export type ConnectionGene = {

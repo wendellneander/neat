@@ -90,35 +90,118 @@ export default class Genome {
     this.connectionGenes.push(newConnection2);
   }
 
-  hasActiveConnectionsBetweenInputAndOutput(): boolean {
-    const inputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
-    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'output').map(node => node.id);
+  // Retorna um array com as camadas de neurônios
+  getLayers(): NodeGene[][] {
+    const inputLayer = this.nodeGenes.filter(node => node.type === 'input');
+    const outputLayer = this.nodeGenes.filter(node => node.type === 'output');
+    const hiddenNodes = this.nodeGenes.filter(node => node.type === 'hidden');
+    const layers: NodeGene[][] = [inputLayer];
+    let currentLayerIndex = 0;
 
-    for (const connection of this.connectionGenes) {
-      if (
-        connection.enabled &&
-        inputNodeIds.some(input => input === connection.inNode) &&
-        outputNodeIds.some(output => output === connection.outNode)
-      ) {
-        return true;
+    while (hiddenNodes.length > 0) {
+      const currentLayer: NodeGene[] = [];
+
+      for (let i = 0; i < hiddenNodes.length; i++) {
+        const node = hiddenNodes[i];
+        const incomingConnections = this.connectionGenes.filter(
+          connection => connection.outNode === node.id && connection.enabled
+        );
+
+        const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some(layerNode => layerNode.id === connection.inNode))
+        if (allConnectionsComeFromLayers) {
+          currentLayer.push(node);
+          hiddenNodes.splice(i, 1);
+          i--;
+        }
+      }
+
+      if (currentLayer.length > 0) {
+        layers.push(currentLayer);
+        currentLayerIndex++;
+      } else {
+        break;
       }
     }
 
-    return false;
+    layers.push(outputLayer);
+    return layers;
   }
 
-  hasIndirectActiveConnectionsBetweenInputAndOutput(): boolean {
-    const inputNodeIds = this.nodeGenes.filter(node => node.type === 'input').map(node => node.id);
-    const outputNodeIds = this.nodeGenes.filter(node => node.type === 'output').map(node => node.id);
+  // Verifica se existem conexões ativas
+  hasActiveConnections(): ConnectionGene[] {
+    return this.connectionGenes.filter(c => c.enabled)
+  }
 
-    for (const connection1 of this.connectionGenes.filter(c => c.enabled && inputNodeIds.some(i => i === c.inNode))) {
-      for (const connection2 of this.connectionGenes.filter(c => c.enabled && outputNodeIds.some(i => i === c.outNode))) {
-        if (connection1.outNode === connection2.inNode) {
+  // Verifica se neurônios na mesma camada têm conexões entre si
+  hasConnectionsInSameLayer(): boolean {
+    const layers = this.getLayers();
+    for (const layer of layers) {
+      const nodeIds = layer.map(node => node.id);
+      for (const nodeId of nodeIds) {
+        const connections = this.connectionGenes.filter(conn => conn.enabled && conn.inNode === nodeId && nodeIds.includes(conn.outNode));
+        if (connections.length > 0) {
           return true;
         }
       }
     }
 
     return false;
+  }
+
+  // Verifica se somente neurônios da camada mais oculta têm conexões com o output
+  hasOutputConnectionsFromHiddenLayer(): boolean {
+    const outputNodes = this.nodeGenes.filter(node => node.type === 'output');
+    const hiddenNodes = this.nodeGenes.filter(node => node.type === 'hidden' && node.id > outputNodes.length);
+
+    for (const hiddenNode of hiddenNodes) {
+      for (const outputNode of outputNodes) {
+        const connectionExists = this.connectionGenes.some(conn => conn.inNode === hiddenNode.id && conn.outNode === outputNode.id);
+        if (!connectionExists) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  // Verifica se todos os neurônios de output recebem conexões da camada mais oculta
+  hasAllOutputNodesConnected(): boolean {
+    const outputNodes = this.nodeGenes.filter(node => node.type === 'output');
+    const hiddenNodes = this.nodeGenes.filter(node => node.type === 'hidden' && node.id > outputNodes.length);
+
+    for (const outputNode of outputNodes) {
+      let connected = false;
+      for (const hiddenNode of hiddenNodes) {
+        const connectionExists = this.connectionGenes.some(conn => conn.inNode === hiddenNode.id && conn.outNode === outputNode.id);
+        if (connectionExists) {
+          connected = true;
+          break;
+        }
+      }
+      if (!connected) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Verifica se neurônios na mesma camada se conectam apenas com neurônios da próxima camada
+  hasConnectionsOnlyToNextLayer(): boolean {
+    const layers = this.getLayers();
+    for (let i = 0; i < layers.length - 1; i++) {
+      const currentLayer = layers[i];
+      const nextLayer = layers[i + 1];
+
+      for (const node of currentLayer) {
+        const connections = this.connectionGenes.filter(conn => conn.enabled && conn.inNode === node.id && !nextLayer.some(nextNode => nextNode.id === conn.outNode));
+        if (connections.length > 0) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }

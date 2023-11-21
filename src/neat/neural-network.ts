@@ -4,7 +4,7 @@ import { ConnectionGene, NodeGene } from "./types";
 export default class NeuralNetwork {
   layers: NodeGene[][];
   connectionGenes: ConnectionGene[];
-  nodeValues: { [id: number]: number }
+  nodeValues: { [id: number]: number };
 
   constructor(readonly genome: Genome) {
     this.connectionGenes = genome.connectionGenes;
@@ -29,7 +29,7 @@ export default class NeuralNetwork {
           connection => connection.outNode === node.id && connection.enabled
         );
 
-        const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some((layerNode) => layerNode.id === connection.inNode))
+        const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some(layerNode => layerNode.id === connection.inNode))
         if (allConnectionsComeFromLayers) {
           currentLayer.push(node);
           hiddenNodes.splice(i, 1);
@@ -139,5 +139,23 @@ export default class NeuralNetwork {
         }
       }
     }
+  }
+  // TODO: validar isso
+  hasNodeConnectionsOnSameLayer(): boolean {
+    for (const nodes of this.layers) {
+      const layerNodeIds = nodes.map(node => node.id)
+      for (const node of nodes) {
+        const hasConnections = this.connectionGenes.some(conn =>
+          conn.outNode == node.id &&
+          layerNodeIds
+            .filter(n => n != node.id)
+            .some(id => id == conn.inNode)
+        )
+        if (hasConnections) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

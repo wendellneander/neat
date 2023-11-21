@@ -25,15 +25,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
 class Logger {
-    constructor(logs = [], errors = []) {
+    constructor(logs = {}, errors = {}) {
         this.logs = logs;
         this.errors = errors;
     }
-    log(title, data) {
-        this.logs.push({ key: title, data });
+    log(key, data) {
+        this.logs[key] = data;
     }
-    error(title, data) {
-        this.errors.push({ key: title, data });
+    error(key, data) {
+        this.errors[key] = data;
     }
     exportFile() {
         fs.writeFileSync('src/result.json', JSON.stringify({ logs: this.logs, errors: this.errors }));

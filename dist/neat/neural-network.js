@@ -19,7 +19,7 @@ class NeuralNetwork {
             for (let i = 0; i < hiddenNodes.length; i++) {
                 const node = hiddenNodes[i];
                 const incomingConnections = this.connectionGenes.filter(connection => connection.outNode === node.id && connection.enabled);
-                const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some((layerNode) => layerNode.id === connection.inNode));
+                const allConnectionsComeFromLayers = incomingConnections.every(connection => layers[currentLayerIndex].some(layerNode => layerNode.id === connection.inNode));
                 if (allConnectionsComeFromLayers) {
                     currentLayer.push(node);
                     hiddenNodes.splice(i, 1);
@@ -113,6 +113,22 @@ class NeuralNetwork {
                 }
             }
         }
+    }
+    // TODO: validar isso
+    hasNodeConnectionsOnSameLayer() {
+        for (const nodes of this.layers) {
+            const layerNodeIds = nodes.map(node => node.id);
+            for (const node of nodes) {
+                const hasConnections = this.connectionGenes.some(conn => conn.outNode == node.id &&
+                    layerNodeIds
+                        .filter(n => n != node.id)
+                        .some(id => id == conn.inNode));
+                if (hasConnections) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 exports.default = NeuralNetwork;

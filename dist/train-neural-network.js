@@ -12,9 +12,9 @@ const hiddenNodes = 2;
 const outputNodes = 1;
 // Crie uma rede neural simples com 2 nós de entrada, 2 nós ocultos e 1 nó de saída
 const layers = [
-    Array.from({ length: inputNodes }, (_, i) => ({ id: i, type: 'input' })),
-    Array.from({ length: hiddenNodes }, (_, i) => ({ id: inputNodes + i, type: 'hidden' })),
-    Array.from({ length: outputNodes }, (_, i) => ({ id: inputNodes + hiddenNodes + i, type: 'output' })),
+    Array.from({ length: inputNodes }, (_, i) => ({ id: i, type: 'input', weight: Math.random() * 2 - 1 })),
+    Array.from({ length: hiddenNodes }, (_, i) => ({ id: inputNodes + i, type: 'hidden', weight: Math.random() * 2 - 1 })),
+    Array.from({ length: outputNodes }, (_, i) => ({ id: inputNodes + hiddenNodes + i, type: 'output', weight: Math.random() * 2 - 1 })),
 ];
 const connectionGenes = [
     { inNode: 0, outNode: 2, weight: Math.random() * 2 - 1, enabled: true, innovation: 1 },
